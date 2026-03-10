@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI в кибербезопасности | DarkHack AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+<style>
+    /* Адаптация под мобилки */
+    @media (max-width: 768px) {
+        .cracker-container { padding: 10px !important; }
+        .cracker-title { font-size: 20px !important; }
+        .cracker-stats { grid-template-columns: 1fr !important; }
+        button { width: 100%; margin: 5px 0 !important; }
+    }
+    /* Скролл для лога */
+    .cracker-log {
+        height: 200px;
+        overflow-y: auto;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        background: #000;
+        color: #0f0;
+        padding: 10px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+    }
+    /* Стили как в оригинале */
+    .cracker-container {
+        background: #0d0d0d;
+        border: 2px solid #00ff00;
+        border-radius: 10px;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .cracker-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 15px 0;
+    }
+    .stat-box {
+        background: #1a1a1a;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        border: 1px solid #00ff00;
+    }
+    .method-btn {
+        background: #222;
+        color: #fff;
+        border: 1px solid #444;
+        padding: 8px 15px;
+        margin: 5px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    .method-btn.active {
+        background: #00ff00;
+        color: #000;
+        border-color: #00ff00;
+    }
+</style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="glow-text">⚡ DarkHack AI</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#about">О проекте</a></li>
+                <li><a href="#cracker">Приложение</a></li>
+                <li><a href="#demo">Бета</a></li>
+                <li><a href="#applications">Применение</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Герой секция -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="typewriter">ИИ в хакерстве</span>
+            </h1>
+            <p class="hero-subtitle">Искусственный интеллект революционизирует кибербезопасность</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="scrollToDemo()"><a href="#demo">Бета</a></button>
+                <button class="btn-secondary"><a href="#donat">Поддержать проект</a></button>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="matrix-background"></div>
+            <img src="img/Haks.jpg" alt="AI Security" class="hero-image">
+        </div>
+    </section>
+
+    <!-- О проекте -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>Почему ИИ важен в хакерстве?</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="card-icon">🔍</div>
+                    <h3>Анализ уязвимостей</h3>
+                    <p>ИИ может автоматически находить уязвимости в коде и системах</p>
+                </div>
+                <div class="about-card">
+                    <div class="card-icon">⚡</div>
+                    <h3>Автоматизация атак</h3>
+                    <p>Автоматическое создание эксплойтов и векторов атак</p>
+                </div>
+                <div class="about-card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Защита систем</h3>
+                    <p>Обнаружение и предотвращение атак в реальном времени</p>
+                </div>
+                <div class="about-card">
+                    <div class="card-icon">🧠</div>
+                    <h3>Предсказание угроз</h3>
+                    <p>Прогнозирование новых векторов атак на основе анализа данных</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Демо приложение -->
+    <section id="demo" class="demo">
+        <div class="container">
+            <h2>Бета: ИИ помощник для пентеста</h2>
+            <p class="loading">На данный момент работают только ответы на быстрые вопросы. Потом может быть сделаем уже полноценного ИИ.</p>
+            <div class="demo-container">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <span>🤖 DarkHack AI Assistant</span>
+                        <div class="status online"></div>
+                    </div>
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="message ai-message">
+                            <div class="message-content">
+                                Привет! Я ИИ помощник для тестирования безопасности. Чем могу помочь?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="message-input" placeholder="Задайте вопрос о безопасности...">
+						<button onclick="sendMessage()">Отправить</button>
+                    </div>
+                </div>
+                <div class="demo-info">
+                    <h3>Возможности ассистента:</h3>
+                    <ul>
+                        <li>🔐 Анализ методов защиты</li>
+                        <li>⚡ Генерация эксплойтов</li>
+                        <li>🌐 Сканирование уязвимостей</li>
+                        <li>📊 Анализ сетевого трафика</li>
+                        <li>🛡️ Рекомендации по безопасности</li>
+                    </ul>
+                    <div style="margin-top: 20px;">
+    <div style="color: #0f0; margin-bottom: 10px;">⬇️ Быстрые вопросы:</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <button class="ai-quick-btn" onclick="askAI('sql')">SQL-инъекция</button>
+        <button class="ai-quick-btn" onclick="askAI('wifi')">Защитить Wi-Fi</button>
+        <button class="ai-quick-btn" onclick="askAI('leak')">Утечка пароля</button>
+        <button class="ai-quick-btn" onclick="askAI('phishing')">Фишинг</button>
+        <button class="ai-quick-btn" onclick="askAI('vpn')">VPN</button>
+        <button class="ai-quick-btn" onclick="askAI('backup')">Бэкап</button>
+    </div>
+</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Применение ИИ -->
+    <section id="applications" class="applications">
+        <div class="container">
+            <h2>Практическое применение ИИ</h2>
+            <div class="apps-grid">
+                <div class="app-card">
+                    <img src="img/Network.jpg" alt="Network Security">
+                    <div class="app-content">
+                        <h3>Сетевой анализ</h3>
+                        <p>Автоматическое обнаружение аномалий в сетевом трафике</p>
+                    </div>
+                </div>
+                <div class="app-card">
+                    <img src="img/Code.jpg" alt="Code Analysis">
+                    <div class="app-content">
+                        <h3>Анализ кода</h3>
+                        <p>Поиск уязвимостей и backdoor'ов в исходном коде</p>
+                    </div>
+                </div>
+                <div class="app-card">
+                    <img src="img/Social.jpg" alt="Social Engineering">
+                    <div class="app-content">
+                        <h3>Социальная инженерия</h3>
+                        <p>Генерация фишинговых атак и анализ поведения</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Приложение -->
+     <section id="cracker"></section>
+    <div class="cracker-container" style="flex: 1;">
+        <div class="cracker-title" style="color: #0f0; font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; font-family: 'JetBrains Mono';">
+            🔓 ADVANCED PASSWORD CRACKER
+        </div>
+
+        <!-- Методы атаки -->
+        <div style="margin-bottom: 20px;">
+            <div style="color: #fff; margin-bottom: 10px;">Метод атаки:</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                <button class="method-btn active" id="method-bruteforce" onclick="setMethod('bruteforce')">BruteForce</button>
+                <button class="method-btn" id="method-dictionary" onclick="setMethod('dictionary')">Словарь</button>
+                <button class="method-btn" id="method-mask" onclick="setMethod('mask')">Маска</button>
+            </div>
+        </div>
+
+        <!-- Целевой пароль -->
+        <div style="margin-bottom: 15px;">
+            <div style="color: #fff; margin-bottom: 5px;">Целевой пароль (8 цифр):</div>
+            <input type="text" id="target-password" value="87654321" maxlength="8" 
+                   style="width: 100%; background: #222; color: #0f0; border: 2px solid #0f0; padding: 12px; border-radius: 5px; font-family: monospace; font-size: 18px; text-align: center;">
+        </div>
+
+        <!-- Маска (скрыта по умолчанию) -->
+        <div id="mask-container" style="display: none; margin-bottom: 15px;">
+            <div style="color: #fff; margin-bottom: 5px;">Маска (8 символов, ? - неизвестно):</div>
+            <input type="text" id="mask-value" value="12??5678" maxlength="8" 
+                   style="width: 100%; background: #222; color: #0f0; border: 2px solid #0f0; padding: 12px; border-radius: 5px; font-family: monospace; font-size: 16px; text-align: center;">
+            <div style="color: #888; font-size: 12px; margin-top: 5px;">Пример: 12??5678 (где ? - цифра)</div>
+        </div>
+
+        <!-- Прогресс бар -->
+        <div style="margin: 20px 0;">
+            <div style="height: 20px; background: #222; border-radius: 10px; overflow: hidden; border: 1px solid #0f0;">
+                <div id="progress-bar" style="height: 100%; width: 0%; background: #0f0; transition: width 0.1s;"></div>
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="cracker-stats">
+            <div class="stat-box">
+                <div style="color: #888; font-size: 12px;">ПОПЫТОК</div>
+                <div id="attempts-count" style="color: #0f0; font-size: 18px; font-weight: bold;">0</div>
+            </div>
+            <div class="stat-box">
+                <div style="color: #888; font-size: 12px;">СКОРОСТЬ</div>
+                <div id="speed-count" style="color: #0f0; font-size: 18px; font-weight: bold;">0/сек</div>
+            </div>
+            <div class="stat-box">
+                <div style="color: #888; font-size: 12px;">ВРЕМЯ</div>
+                <div id="time-count" style="color: #0f0; font-size: 18px; font-weight: bold;">0с</div>
+            </div>
+        </div>
+
+        <!-- Текущая попытка -->
+        <div id="current-attempt" style="color: #ff0; text-align: center; margin: 10px 0; font-family: monospace; font-size: 14px;">
+            ⚡ Текущая: ---
+        </div>
+
+        <!-- Кнопки управления -->
+        <div style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+            <button id="start-btn" style="background: #007700; color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; flex: 1; font-size: 16px;" onclick="startCracking()">🚀 НАЧАТЬ</button>
+            <button id="stop-btn" style="background: #770000; color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; flex: 1; font-size: 16px;" onclick="stopCracking()" disabled>⏹️ СТОП</button>
+        </div>
+
+        <!-- Лог -->
+        <div style="margin-top: 30px;">
+            <div style="color: #fff; margin-bottom: 5px;">СИСТЕМНЫЙ ЛОГ:</div>
+            <div id="log-output" class="cracker-log">
+[12:00:00] ==================================================
+[12:00:00] 🚀 ЗАПУСК ПРОЦЕССА ВЗЛОМА
+[12:00:00] 🎯 Целевой пароль: 87654321
+[12:00:00] 🔧 Метод атаки: bruteforce
+[12:00:00] ==================================================
+            </div>
+        </div>
+    </div>
+
+<!-- Криптокошелек -->
+<section id="donat"></section>
+<div style="text-align: center; margin: 40px auto; max-width: 600px; padding: 20px; border: 2px solid #0f0; border-radius: 20px; background: #0a0a0a;">
+    <div style="color: #0f0; font-size: 22px; font-weight: bold; margin-bottom: 15px;">💎 ПОДДЕРЖАТЬ ПРОЕКТ (крипта)</div>
+    
+    <!-- Адрес кошелька -->
+    <div style="background: #000; padding: 15px; border-radius: 10px; border: 1px solid #0f0; margin: 15px 0; word-break: break-all; font-family: monospace; font-size: 14px; color: #0f0; user-select: all;" id="wallet-address">
+        TYXEMFJxHqaig3gSc6zNQzCMhnSbwbpt3x
+    </div>
+    
+<div style="background: #fff; padding: 10px; display: inline-block; border-radius: 10px; margin-bottom: 15px;">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TYXEMFJxHqaig3gSc6zNQzCMhnSbwbpt3x" style="width: 150px; height: 150px;">
+</div>
+
+    <!-- Кнопка копирования -->
+    <button onclick="copyWallet()" style="background: #0f0; color: #000; border: none; padding: 10px 30px; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 10px;">📋 КОПИРОВАТЬ АДРЕС</button>
+    
+    <!-- Сеть -->
+    <div style="color: #888; font-size: 14px; margin-top: 10px;">Сеть: <span style="color: #0f0;">TRC-20 (Tether USDT)</span></div>
+    <div style="color: #888; font-size: 12px;">Отсканируй QR в приложении или скопируй адрес</div>
+</div>
+
+<script>
+function copyWallet() {
+    const addr = document.getElementById('wallet-address').innerText;
+    navigator.clipboard.writeText(addr).then(() => {
+        alert('✅ Адрес скопирован!');
+    });
+}
+</script>
+
+    <!-- ИНСТРУКЦИЯ ДЛЯ НОВИЧКОВ -->
+    <div style="margin-top: 30px; text-align: left; background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333;">
+        
+        <div style="color: #0f0; font-size: 20px; margin-bottom: 15px;">📘 ИНСТРУКЦИЯ (для тех, кто первый раз):</div>
+        
+        <div style="color: #ddd; margin-bottom: 10px;">✅ <span style="color: #0f0;">1.</span> Скачай приложение <strong>Tonkeeper</strong> или <strong>Trust Wallet</strong> (есть в AppStore/Google Play)</div>
+        <div style="color: #ddd; margin-bottom: 10px;">✅ <span style="color: #0f0;">2.</span> Купи USDT через встроенный обменник (или через биржу типа Bybit/OKX)</div>
+        <div style="color: #ddd; margin-bottom: 10px;">✅ <span style="color: #0f0;">3.</span> Нажми «Отправить», вставь скопированный адрес</div>
+        <div style="color: #ddd; margin-bottom: 10px;">✅ <span style="color: #0f0;">4.</span> Выбери сеть <strong>TRC-20</strong> (это важно!)</div>
+        <div style="color: #ddd; margin-bottom: 10px;">✅ <span style="color: #0f0;">5.</span> Введи сумму и отправляй</div>
+        <div style="color: #ddd; margin-top: 15px; background: #1a3300; padding: 10px; border-radius: 10px; border-left: 4px solid #0f0;">
+            ⚡ Придет за 1-5 минут. Спасибо за поддержку, бро!
+        </div>
+
+
+    <!-- Доп. ссылка на биржу для новичков -->
+    <div style="margin-top: 20px; font-size: 13px; color: #666;">
+        Нет крипты? Купи на <a href="https://tonkeeper.com/" target="_blank" style="color: #0f0;">Tonkeeper</a> или <a href="https://www.bybit.com" target="_blank" style="color: #0f0;">Bybit</a>
+    </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 DarkHack AI. Только для образовательных целей.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+<script>
+    let isRunning = false;
+    let currentMethod = 'bruteforce';
+    let worker = null;
+    let startTime = 0;
+    let attempts = 0;
+    let stopRequested = false;
+
+    function setMethod(method) {
+        currentMethod = method;
+        document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`method-${method}`).classList.add('active');
+        document.getElementById('mask-container').style.display = method === 'mask' ? 'block' : 'none';
+    }
+
+    function log(message) {
+        const logDiv = document.getElementById('log-output');
+        const timestamp = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        logDiv.innerHTML += `\n[${timestamp}] ${message}`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    // Функция сна
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    // Генератор комбинаций (не жрёт память)
+    async function* combinationGenerator(target, method, mask) {
+        const digits = '0123456789';
+        
+        if (method === 'dictionary') {
+            const dict = ['12345678', '87654321', '11111111', '00000000', '99999999', '12121212', '11223344', '12341234', '12312312', '10041004', '11112222', '22223333', '33334444', '44445555', '55556666', '66667777', '77778888', '88889999', '99990000', '12344321', '43214321', '56785678', '87658765', '13571357', '24682468', '10203040', '20202020', '31415926', '27182818', '11235813', '12345679', '98765432', '11111112', '12121314', '10101010', '12345000', '54321678', '99887766', '11223355', '22334455', '33445566', '44556677', '55667788', '66778899', '77889900', '88990011', '99001122', '12345600', '65432100', '14725836', '25836914', '36914725', '48151623', '51627384', '62738495', '73849506', '84950617', '95061728', '12348967', '98761234', '12349876', '56781234', '43215678', '11112222', '22221111', '33331234', '44441234', '55551234', '66661234', '77771234', '88881234', '99991234', '12348888', '12347777', '12346666', '12345555', '12344444', '12343333', '12342222', '10102020', '20203030', '30304040', '40405050', '50506060', '60607070', '70708080', '80809090', '90900000', '10011001', '20022002', '30033003', '40044004', '50055005', '60066006', '70077007', '80088008', '90099009', '12345999', '54321999', '99998888', '77779999', '01012000', '02022002', '03032003', '04042004', '05052005', '06062006', '07072007', '08082008', '09092009', '10102010', '11112011', '12122012', '13132013', '14142014', '15152015', '16162016', '17172017', '18182018', '19192019', '20202020', '21212021', '22222022', '23232023', '24242024', '25252025', '26262026', '27272027', '28282028', '29292029', '30303030', '31313031', '32323032', '33333033', '34343034', '35353035', '36363036', '37373037', '38383038', '39393039', '40404040', '41414041', '42424042', '43434043', '44444044', '45454045', '46464046', '47474047', '48484048', '49494049', '50505050', '51515051', '52525052', '53535053', '54545054', '55555055', '56565056', '57575057', '58585058', '59595059', '60606060', '61616061', '62626062', '63636063', '64646064', '65656065', '66666066', '67676067', '68686068', '69696069', '70707070', '71717071', '72727072', '73737073', '74747074', '75757075', '76767076', '77777077', '78787078', '79797079', '80808080', '81818081', '82828082', '83838083', '84848084', '85858085', '86868086', '87878087', '88888088', '89898089', '90909090', '91919091', '92929092', '93939093', '94949094', '95959095', '96969096', '97979097', '98989098', '99999099'];
+            for (let pwd of dict) {
+                if (!isRunning || stopRequested) return;
+                yield pwd;
+                await sleep(0);
+            }
+            return;
+        }
+        
+        if (method === 'mask' && mask) {
+            // Парсим маску
+            const unknown = [];
+            const known = [];
+            for (let i = 0; i < 8; i++) {
+                if (mask[i] === '?') unknown.push(i);
+                else known.push({pos: i, char: mask[i]});
+            }
+            
+            // Перебираем неизвестные позиции
+            const total = Math.pow(10, unknown.length);
+            for (let i = 0; i < total; i++) {
+                if (!isRunning || stopRequested) return;
+                
+                let pwd = mask.split('');
+                let num = i.toString().padStart(unknown.length, '0');
+                for (let j = 0; j < unknown.length; j++) {
+                    pwd[unknown[j]] = num[j];
+                }
+                yield pwd.join('');
+            }
+            return;
+        }
+        
+        // BruteForce - основной метод
+        // Разбиваем на диапазоны, чтобы не грузить браузер
+        const RANGE_SIZE = 100000; // Пачками по 100к
+        
+        for (let start = 0; start < 100000000; start += RANGE_SIZE) {
+            if (!isRunning || stopRequested) return;
+            
+            const end = Math.min(start + RANGE_SIZE, 100000000);
+            
+            for (let num = start; num < end; num++) {
+                if (!isRunning || stopRequested) return;
+                
+                const pwd = num.toString().padStart(8, '0');
+                yield pwd;
+            }
+            
+            // ОТДЫХАЕМ после каждой пачки
+            await sleep(0);
+            
+            // Обновляем прогресс
+            const progress = (start / 100000000) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+    }
+
+    async function startCracking() {
+        if (isRunning) return;
+        
+        const target = document.getElementById('target-password').value;
+        if (target.length !== 8 || !/^\d+$/.test(target)) {
+            alert('Пароль должен быть из 8 цифр!');
+            return;
+        }
+
+        isRunning = true;
+        stopRequested = false;
+        attempts = 0;
+        startTime = Date.now();
+        
+        document.getElementById('start-btn').disabled = true;
+        document.getElementById('stop-btn').disabled = false;
+        document.getElementById('log-output').innerHTML = '';
+        document.getElementById('progress-bar').style.width = '0%';
+        
+        log('==================================================');
+        log('🚀 ЗАПУСК ПРОЦЕССА ВЗЛОМА');
+        log(`🎯 Целевой пароль: ${target}`);
+        log(`🔧 Метод атаки: ${currentMethod}`);
+        if (currentMethod === 'mask') {
+            log(`🎭 Маска: ${document.getElementById('mask-value').value}`);
+        }
+        log('==================================================');
+
+        const mask = currentMethod === 'mask' ? document.getElementById('mask-value').value : null;
+        const generator = combinationGenerator(target, currentMethod, mask);
+
+        for await (let pwd of generator) {
+            if (!isRunning || stopRequested) {
+                log('⏹️ Процесс остановлен');
+                break;
+            }
+            
+            attempts++;
+            
+            // Обновляем интерфейс каждые 100 попыток
+            if (attempts % 100 === 0) {
+                const elapsed = (Date.now() - startTime) / 1000;
+                document.getElementById('attempts-count').textContent = attempts.toLocaleString();
+                document.getElementById('speed-count').textContent = Math.round(attempts / elapsed).toLocaleString() + '/сек';
+                document.getElementById('time-count').textContent = elapsed.toFixed(1) + 'с';
+                document.getElementById('current-attempt').innerHTML = `⚡ Текущая: ${pwd}`;
+                
+                // Даём браузеру отдохнуть
+                await sleep(0);
+            }
+            
+            // Проверяем совпадение
+            if (pwd === target) {
+                const elapsed = (Date.now() - startTime) / 1000;
+                log('🎉' + '🎉'.repeat(10));
+                log('🎊 ПАРОЛЬ УСПЕШНО ВЗЛОМАН!');
+                log(`🔓 НАЙДЕННЫЙ ПАРОЛЬ: ${pwd}`);
+                log(`⏱️ Затраченное время: ${elapsed.toFixed(2)} секунд`);
+                log(`📊 Всего попыток: ${attempts.toLocaleString()}`);
+                log(`⚡ Средняя скорость: ${Math.round(attempts / elapsed).toLocaleString()} попыток/сек`);
+                log('🎉' + '🎉'.repeat(10));
+                
+                document.getElementById('current-attempt').innerHTML = `🎉 НАЙДЕНО: ${pwd}`;
+                document.getElementById('progress-bar').style.width = '100%';
+                stopCracking();
+                break;
+            }
+        }
+        
+        // Если дошли до конца и не нашли
+        if (isRunning && !stopRequested) {
+            const elapsed = (Date.now() - startTime) / 1000;
+            log('❌ Пароль не найден в заданном диапазоне');
+            log(`📊 Всего попыток: ${attempts.toLocaleString()}`);
+            log(`⏱️ Затраченное время: ${elapsed.toFixed(2)}с`);
+            stopCracking();
+        }
+    }
+
+    function stopCracking() {
+        stopRequested = true;
+        isRunning = false;
+        
+        document.getElementById('start-btn').disabled = false;
+        document.getElementById('stop-btn').disabled = true;
+        
+        // Не логируем, если уже есть сообщение об остановке
+        if (!document.getElementById('log-output').innerHTML.includes('остановлен')) {
+            log('⏹️ Процесс остановлен пользователем');
+        }
+    }
+
+    // Инициализация
+    setMethod('bruteforce');
+
+    // Фейк-ИИ с готовыми ответами
+function askAI(topic) {
+    const input = document.getElementById('message-input');
+    const chatMessages = document.getElementById('chat-messages');
+    
+    // Вставляем вопрос пользователя
+    if (input) {
+        input.value = getQuestionText(topic);
+    }
+    
+    // Добавляем сообщение пользователя
+    const userDiv = document.createElement('div');
+    userDiv.className = 'message user-message';
+    userDiv.innerHTML = `<div class="message-content">${getQuestionText(topic)}</div>`;
+    chatMessages.appendChild(userDiv);
+    
+    // Добавляем ответ ИИ
+    setTimeout(() => {
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'message ai-message';
+        aiDiv.innerHTML = `<div class="message-content">${getAIResponse(topic)}</div>`;
+        chatMessages.appendChild(aiDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 500); // Задержка как у настоящего ИИ
+}
+
+function getQuestionText(topic) {
+    const questions = {
+        'sql': 'Что такое SQL-инъекция и как от неё защититься?',
+        'wifi': 'Как защитить домашний Wi-Fi от взлома?',
+        'leak': 'Мой пароль утекли, что делать?',
+        'phishing': 'Как распознать фишинговое письмо?',
+        'vpn': 'Зачем нужен VPN и безопасен ли он?',
+        'backup': 'Как правильно делать бэкапы данных?'
+    };
+    return questions[topic] || 'Расскажи про безопасность';
+}
+
+function getAIResponse(topic) {
+    const responses = {
+        'sql': '🔐 SQL-инъекция — это когда хакер вставляет вредоносный SQL-код в поле ввода. Защита: используй параметризованные запросы, экранируй спецсимволы и не доверяй пользовательскому вводу.',
+        
+        'wifi': '📡 Чтобы защитить Wi-Fi: включи WPA3, отключи WPS, смени пароль по умолчанию, скрой SSID и включи фильтрацию по MAC-адресам.',
+        
+        'leak': '⚠️ Если пароль утек: 1) Смени его везде, где использовал. 2) Включи двухфакторку. 3) Проверь почту на haveibeenpwned.com. 4) Используй менеджер паролей.',
+        
+        'phishing': '🎣 Фишинг распознать: смотри на адрес отправителя, не переходи по ссылкам из писем, проверяй орфографию, не вводи данные на подозрительных сайтах.',
+        
+        'vpn': '🌐 VPN шифрует трафик и скрывает IP. Но выбирай платные VPN без логов (Mullvad, ProtonVPN). Бесплатные часто продают данные.',
+        
+        'backup': '💾 Правило 3-2-1: 3 копии данных, 2 разных носителя, 1 копия вне дома. Делай бэкапы автоматически и проверяй восстановление.'
+    };
+    return responses[topic] || 'Я ещё учусь. Задай другой вопрос или нажми на кнопку.';
+}
+
+// Переопределяем sendMessage если он уже есть
+function sendMessage() {
+    const input = document.getElementById('message-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    
+    const chatMessages = document.getElementById('chat-messages');
+    
+    // Сообщение пользователя
+    const userDiv = document.createElement('div');
+    userDiv.className = 'message user-message';
+    userDiv.innerHTML = `<div class="message-content">${msg}</div>`;
+    chatMessages.appendChild(userDiv);
+    input.value = '';
+    
+    // Ответ ИИ (если нет готового - дефолтный)
+    setTimeout(() => {
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'message ai-message';
+        
+        // Проверяем, есть ли готовый ответ
+        let response = 'Я понимаю только вопросы по безопасности. Нажми на кнопки выше ⬆️';
+        
+        const lowerMsg = msg.toLowerCase();
+        if (lowerMsg.includes('sql') || lowerMsg.includes('инъекц')) response = getAIResponse('sql');
+        else if (lowerMsg.includes('wi-fi') || lowerMsg.includes('wifi') || lowerMsg.includes('роутер')) response = getAIResponse('wifi');
+        else if (lowerMsg.includes('утек') || lowerMsg.includes('пароль')) response = getAIResponse('leak');
+        else if (lowerMsg.includes('фишинг')) response = getAIResponse('phishing');
+        else if (lowerMsg.includes('vpn')) response = getAIResponse('vpn');
+        else if (lowerMsg.includes('бэкап') || lowerMsg.includes('backup')) response = getAIResponse('backup');
+        
+        aiDiv.innerHTML = `<div class="message-content">${response}</div>`;
+        chatMessages.appendChild(aiDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 700);
+}
+</script>
+</body>
+</html>
